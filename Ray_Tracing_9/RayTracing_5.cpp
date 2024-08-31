@@ -8,6 +8,7 @@
 #include "hittable_list.h"
 #include "sphere.h"
 
+
 color ray_color(const ray& r);
 color ray_color(const ray& r, const hittable& world);
 double hit_sphere(const point3& center, double radius, const ray& r);
@@ -30,6 +31,7 @@ int main()
 	cam.aspect_ratio = 16.0 / 9.0;
 	cam.image_width = 400;
 	cam.file = &file;
+	cam.samples_per_pixel = 1000;
 
 	cam.render(world);
 }
