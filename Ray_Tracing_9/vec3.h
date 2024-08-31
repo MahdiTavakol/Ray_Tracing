@@ -25,6 +25,14 @@ public:
 		return *this;
 	}
 
+	vec3& operator+=(vec3 v)
+	{
+		e[0] += v[0];
+		e[1] += v[1];
+		e[2] += v[2];
+		return *this;
+	}
+
 	vec3& operator/=(double t) {
 		if (t == 0.0) {
 			throw std::invalid_argument("Division by zero");
