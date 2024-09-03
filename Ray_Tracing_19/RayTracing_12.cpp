@@ -113,26 +113,31 @@ int main()
 
 	cam.render(world,r_array);
 
-	// gather the data
-	double* rs = (double*)r_array.rs;
-	double* gs = (double*)r_array.gs;
-	double* bs = (double*)r_array.bs;
 
-	double* rs_all = (double*)malloc(cam.image_height * cam.image_width * sizeof(double));
-	double* gs_all = (double*)malloc(cam.image_height * cam.image_width * sizeof(double));
-	double* bs_all = (double*)malloc(cam.image_height * cam.image_width * sizeof(double));
+	// gather the data
+	double* rs = r_array.rs[0];
+	double* gs = r_array.gs[0];
+	double* bs = r_array.bs[0];
+	
+	
+
+	double* rs_all = (double*)malloc(width_per_node * height_per_node * size * sizeof(double));
+	double* gs_all = (double*)malloc(width_per_node * height_per_node * size * sizeof(double));
+	double* bs_all = (double*)malloc(width_per_node * height_per_node * size * sizeof(double));
+	
 
 	//
-	MPI_Gather(rs, width_per_node * height_per_node, MPI_DOUBLE, rs_all, width_per_node * height_per_node,MPI_DOUBLE, 0, MPI_world);
-	MPI_Gather(gs, width_per_node * height_per_node, MPI_DOUBLE, gs_all, width_per_node * height_per_node,MPI_DOUBLE, 0, MPI_world);
-	MPI_Gather(bs, width_per_node * height_per_node, MPI_DOUBLE, bs_all, width_per_node * height_per_node,MPI_DOUBLE, 0, MPI_world);
-
-	rays_array r_array_all(rs, gs, bs, cam.image_width, cam.image_height);
+	MPI_Allgather(rs, width_per_node * height_per_node, MPI_DOUBLE, rs_all, width_per_node * height_per_node,MPI_DOUBLE, MPI_world);
+	MPI_Allgather(gs, width_per_node * height_per_node, MPI_DOUBLE, gs_all, width_per_node * height_per_node,MPI_DOUBLE, MPI_world);
+	MPI_Allgather(bs, width_per_node * height_per_node, MPI_DOUBLE, bs_all, width_per_node * height_per_node,MPI_DOUBLE, MPI_world);
+	
+	rays_array r_array_all(rs_all, gs_all, bs_all, cam.image_width, cam.image_height);
 
 	// write class
-	write write_obj(&file, &r_array_all, cam.image_width, cam.image_height);
-	write_obj.write_file();
-
+	if (rank == 0) {
+		write write_obj(&file, &r_array_all, cam.image_width, cam.image_height);
+		write_obj.write_file();
+	}
 
 	MPI_Finalize();
 }
