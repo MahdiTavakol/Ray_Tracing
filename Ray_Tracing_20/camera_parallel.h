@@ -9,7 +9,7 @@ public:
 	camera_parallel(const int _width_min, const int _width_max,const int _height_min, const int _height_max) :
 		width_min(_width_min), width_max(_width_max), height_min(_height_min), height_max(_height_max) {}
 	camera_parallel(): width_min(0.0), width_max(0.0), height_min(0.0), height_max(0.0) {}
-	void render(const hittable& world, rays_array& r_a)
+	void render(const hittable& world, color_array& c_a)
 	{
 		initialize();
 		for (int j = height_min; j < height_max; j++)
@@ -22,7 +22,11 @@ public:
 					ray r = get_ray(i, j);
 					pixel_color += ray_color(r, max_depth, world);
 				}
-				rays_array_add(r_a, i-width_min, j-height_min, pixel_samples_scale * pixel_color);
+				pixel_color = pixel_samples_scale * pixel_color;
+				color_data** c_data = c_a.return_array();
+				c_data[i - width_min][j - height_min].r = pixel_color.x();
+				c_data[i - width_min][j - height_min].g = pixel_color.y();
+				c_data[i - width_min][j - height_min].b = pixel_color.z();
 			}
 		}
 	}
