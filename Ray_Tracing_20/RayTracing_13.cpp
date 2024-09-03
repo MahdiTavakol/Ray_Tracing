@@ -12,6 +12,7 @@
 #include "material.h"
 #include "sphere.h"
 #include "write.h"
+#include "color_array.h"
 #include "camera_parallel.h"
 
 
@@ -95,8 +96,8 @@ int main()
 	int height_max = cam.image_height;
 	cam.set_range(width_min, width_max, height_min, height_max);
 
-	// rays_array
-	rays_array r_array(width_per_node, height_per_node);
+	// colors_array
+	color_array c_array(width_per_node, height_per_node);
 
 	//cam.vfov = 90;
 	cam.vfov = 20;
@@ -108,27 +109,21 @@ int main()
 	cam.defocus_angle = 0.6;
 	cam.focus_dist = 10.0;
 
-	cam.render(world, r_array);
+	cam.render(world, c_array);
 
 
 	// gather the data
-	double* rs = r_array.rs[0];
-	double* gs = r_array.gs[0];
-	double* bs = r_array.bs[0];
+	color_data* colors = c_array.return_array()[0];
 
 
 
-	double* rs_all = (double*)malloc(width_per_node * height_per_node * size * sizeof(double));
-	double* gs_all = (double*)malloc(width_per_node * height_per_node * size * sizeof(double));
-	double* bs_all = (double*)malloc(width_per_node * height_per_node * size * sizeof(double));
+	color_data* colors_all = (color_data*)malloc(width_per_node * height_per_node * size * sizeof(color_data));
+	
+	
+	int num_data = width_per_node * height_per_node * sizeof(color_data) / sizeof(double);
+	MPI_Allgather(colors, num_data, MPI_DOUBLE, colors_all, num_data, MPI_DOUBLE, MPI_world);
 
-
-	//
-	MPI_Allgather(rs, width_per_node * height_per_node, MPI_DOUBLE, rs_all, width_per_node * height_per_node, MPI_DOUBLE, MPI_world);
-	MPI_Allgather(gs, width_per_node * height_per_node, MPI_DOUBLE, gs_all, width_per_node * height_per_node, MPI_DOUBLE, MPI_world);
-	MPI_Allgather(bs, width_per_node * height_per_node, MPI_DOUBLE, bs_all, width_per_node * height_per_node, MPI_DOUBLE, MPI_world);
-
-	rays_array r_array_all(rs_all, gs_all, bs_all, cam.image_width, cam.image_height);
+	color_array c_array_all(cam.image_width, cam.image_height,colors_all);
 
 	// write class
 	if (rank == 0) {
