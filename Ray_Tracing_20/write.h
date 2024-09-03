@@ -10,7 +10,7 @@ public:
 	void write_file()
 	{
 		*file << "P3\n" << image_width << " " << image_height << "\n255\n";
-		color_data** c_data = *colors.return_array();
+		color_data** c_data = colors->return_array();
 
 		for (int j = 0; j < image_height; j++)
 		{
