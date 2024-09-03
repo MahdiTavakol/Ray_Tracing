@@ -15,9 +15,15 @@ public:
 	}
 	rays_array(double* _rs, double* _gs, double* _bs, int _width, int _height) :num_pixels_x(_width), num_pixels_y(_height)
 	{
-		this->rs = (double **)_rs;
-		this->gs = (double **)_gs;
-		this->bs = (double **)_bs;
+		this->rs = (double**) malloc(num_pixels_x*sizeof(double*));
+		this->gs = (double**) malloc(num_pixels_x*sizeof(double*));
+		this->bs = (double**) malloc(num_pixels_x*sizeof(double*));
+		for (int i = 0; i < _width; i++)
+		{
+			this->rs[i] = &_rs[i * _height];
+			this->gs[i] = &_gs[i * _height];
+			this->bs[i] = &_bs[i * _height];
+		}
 	}
 	~rays_array()
 	{
