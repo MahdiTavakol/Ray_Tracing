@@ -7,6 +7,7 @@
 
 #include "hittable.h"
 #include "material.h"
+#include "color_array.h"
 
 
 
@@ -29,7 +30,7 @@ public:
 
 	std::ofstream* file;
 
-	void render(const hittable& world, rays_array& r_a) {
+	void render(const hittable& world, color_array& c_a) {
 		initialize();
 
 
@@ -45,7 +46,11 @@ public:
 					ray r = get_ray(i, j);
 					pixel_color += ray_color(r, max_depth, world);
 				}
-				rays_array_add(r_a, i, j, pixel_samples_scale * pixel_color);
+			    pixel_color = pixel_samples_scale * pixel_color;
+				color_data** c_data = c_a.return_array();
+				c_data[i][j].r = pixel_color.x();
+				c_data[i][j].g = pixel_color.y();
+				c_data[i][j].b = pixel_color.z();
 			}
 		}
 
