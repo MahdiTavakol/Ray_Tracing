@@ -127,7 +127,7 @@ int main()
 
 	// write class
 	if (rank == 0) {
-		write write_obj(&file, &r_array_all, cam.image_width, cam.image_height);
+		write write_obj(&file, &c_array_all, cam.image_width, cam.image_height);
 		write_obj.write_file();
 	}
 
