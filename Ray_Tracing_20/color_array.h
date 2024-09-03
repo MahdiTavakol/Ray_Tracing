@@ -31,6 +31,10 @@ public:
 	}
 
 	color_array& operator=(color_array second) {
+		if (this == &second)
+		{
+			return *this;
+		}
 		this->deallocate();
 		this->width = second.width;
 		this->height = second.height;
@@ -68,6 +72,7 @@ private:
 		free(this->array);
 	}
 };
+
 
 inline std::ostream& operator<<(std::ostream& out, const color_data& _c_data)
 {
