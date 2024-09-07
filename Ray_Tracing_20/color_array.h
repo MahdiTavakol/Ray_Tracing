@@ -8,28 +8,48 @@ typedef struct { double r, g, b; } color_data;
 class color_array
 {
 public:
-	color_array(const int& _width, const int& _height): width(_width), height(_height) 
-	{
-		allocate();
-	}
-	color_array(const int& _width, const int& _height, color_data* _color_data): color_array(_width, _height)
-	{
-		allocate();
-		for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
-				this->array[i][j] = _color_data[i * height + j]; //1D to 2D array conversion
-	}
-	color_array(const int& _width, const int& _height, color_data** _color_data) : color_array(_width, _height)
+	color_array(const int& _width, const int& _height, color_data** _color_data) : width(_width), height(_height)
 	{
 		allocate();
 		for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 				this->array[i][j] = _color_data[i][j];
+
 	}
-	color_array():color_array(0.0, 0.0) {}
+	color_array(const int& _width, const int& _height, color_data* _color_data) : width(_width), height(_height)
+	{
+		allocate();
+		for (int i = 0; i < width; i++)
+			for (int j = 0; j < height; j++)
+			{
+				this->array[i][j] = _color_data[i * height + j]; //1D to 2D array conversion
+			}
+	}
+	color_array(const int& _width, const int& _height) : width(_width), height(_height)
+	{
+		allocate();
+	}
+	color_array() : array(nullptr), width(0), height(0) {}
 	~color_array()
 	{
 		deallocate();
+	}
+	void reset_size(const int& _width, const int& _height)
+	{
+		if (this->width != _width || this->height != _height)
+		{
+			if (this->width && this->height) deallocate();
+			this->width = _width;
+			this->height = _height;
+			allocate();
+		}
+	}
+	void reset(const int& _width, const int& _height, color_data* _color_data)
+	{
+		this->reset_size(_width, _height);
+		for (int i = 0; i < width; i++)
+			for (int j = 0; j < height; j++)
+				this->array[i][j] = _color_data[i * height + j]; //1D to 2D array conversion
 	}
 	void set_range(const int& _width, const int& _height)
 	{
@@ -76,8 +96,12 @@ private:
 	}
 	void deallocate()
 	{
-		free(this->array[0]);
-		free(this->array);
+		if (this->array != nullptr)
+		{
+			if (this->array[0] != nullptr) free(this->array[0]);
+			free(this->array);
+		}
+		this->array = nullptr;
 	}
 };
 

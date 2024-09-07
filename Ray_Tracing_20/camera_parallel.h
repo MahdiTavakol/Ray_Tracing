@@ -8,7 +8,7 @@ class camera_parallel : public camera
 public:
 	camera_parallel(const int _width_min, const int _width_max,const int _height_min, const int _height_max) :
 		width_min(_width_min), width_max(_width_max), height_min(_height_min), height_max(_height_max) {}
-	camera_parallel(): width_min(0.0), width_max(0.0), height_min(0.0), height_max(0.0) {}
+	camera_parallel(): width_min(0), width_max(0), height_min(0), height_max(0) {}
 	void render(const hittable& world, color_array& c_a)
 	{
 		initialize();

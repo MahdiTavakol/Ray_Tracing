@@ -14,6 +14,7 @@
 #include "write.h"
 #include "color_array.h"
 #include "camera_parallel.h"
+#include "parallel.h"
 
 
 int main()
@@ -22,7 +23,8 @@ int main()
 	MPI_Init(NULL, NULL);
 
 	// World
-	hittable_list world;
+	hittable_list world, *world_ptr; // I am not sure if the following lines do not change the address of world
+	world_ptr = &world;
 
 	auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
 	world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, ground_material));
@@ -74,30 +76,14 @@ int main()
 
 
 	// Camera
-	camera_parallel cam;
+	camera_parallel cam, * cam_ptr;
+	cam_ptr = &cam;
 
 	cam.aspect_ratio = 16.0 / 9.0;
 	cam.image_width = 1920;
-	cam.file = &file;
 	cam.samples_per_pixel = 500;
 	cam.max_depth = 50;
 	cam.initialize();
-
-	// distribute load
-	int size, rank;
-	MPI_Comm MPI_world(MPI_COMM_WORLD);
-	MPI_Comm_rank(MPI_world, &rank);
-	MPI_Comm_size(MPI_world, &size);
-	int width_per_node = int(cam.image_width / size + 1);
-	int height_per_node = cam.image_height;
-	int width_min = rank * width_per_node;
-	int width_max = width_min + width_per_node;
-	int height_min = 0;
-	int height_max = cam.image_height;
-	cam.set_range(width_min, width_max, height_min, height_max);
-
-	// colors_array
-	color_array c_array(width_per_node, height_per_node);
 
 	//cam.vfov = 90;
 	cam.vfov = 20;
@@ -109,27 +95,38 @@ int main()
 	cam.defocus_angle = 0.6;
 	cam.focus_dist = 10.0;
 
-	cam.render(world, c_array);
+
+	parallel para(cam_ptr,world_ptr);
+	color_array* c_array_ptr = para.color_array_ptr();
+	color_array* c_array_all_ptr;
+	int rank;
+	rank = para.return_rank();
+	if (rank == 0)
+	{
+		std::clog << "Rendering                           " << std::endl;
+		fflush(stdout);
+	}
+	para.render();
+	if (rank == 0)
+	{
+		std::clog << "Gathering data from nodes           " << std::endl;
+		fflush(stdout);
+	}
+	para.gather();
+	c_array_all_ptr = para.color_array_all_ptr();
 
 
-	// gather the data
-	color_data* colors = c_array.return_array()[0];
 
-
-
-	color_data* colors_all = (color_data*)malloc(width_per_node * height_per_node * size * sizeof(color_data));
-	
-	
-	int num_data = width_per_node * height_per_node * sizeof(color_data) / sizeof(double);
-	MPI_Allgather(colors, num_data, MPI_DOUBLE, colors_all, num_data, MPI_DOUBLE, MPI_world);
-
-	color_array c_array_all(cam.image_width, cam.image_height,colors_all);
 
 	// write class
 	if (rank == 0) {
-		write write_obj(&file, &c_array_all, cam.image_width, cam.image_height);
+		write write_obj(&file, c_array_all_ptr, cam.image_width, cam.image_height);
 		write_obj.write_file();
 	}
-
+	if (rank == 0)  
+	{
+		std::clog << "Cleanning up                    " << std::endl;
+		fflush(stdout);
+	}
 	MPI_Finalize();
 }

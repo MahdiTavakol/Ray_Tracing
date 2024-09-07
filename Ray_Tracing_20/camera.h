@@ -28,7 +28,6 @@ public:
 	double focus_dist = 10;
 
 
-	std::ofstream* file;
 
 	void render(const hittable& world, color_array& c_a) {
 		initialize();
