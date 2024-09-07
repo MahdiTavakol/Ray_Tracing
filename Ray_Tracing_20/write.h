@@ -16,7 +16,7 @@ public:
 		{
 			for (int i = 0; i < image_width; i++)
 			{
-				*file << c_data[i][j];
+				*file << c_data[i][j]; //This leads to strided access ==> might need to change the indexing to [height_index][width_index]
 			}
 		}
 	}
@@ -26,9 +26,8 @@ public:
 	}
 private:
 	std::ofstream* file;
-	color_data* colors;
+	color_array* colors;
 	int image_width, image_height;
-	vec3** data;
 };
 
 

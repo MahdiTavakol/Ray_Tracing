@@ -12,14 +12,21 @@ public:
 	{
 		allocate();
 	}
-	color_array(const int& _width, const int& _height, color_data* _color_data): width(_width), height(_height)
+	color_array(const int& _width, const int& _height, color_data* _color_data): color_array(_width, _height)
 	{
 		allocate();
 		for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
-				this->array[i][j] = _color_data[i * width + j];
+				this->array[i][j] = _color_data[i * height + j]; //1D to 2D array conversion
 	}
-	color_array() :color_array(0.0, 0.0) {}
+	color_array(const int& _width, const int& _height, color_data** _color_data) : color_array(_width, _height)
+	{
+		allocate();
+		for (int i = 0; i < width; i++)
+			for (int j = 0; j < height; j++)
+				this->array[i][j] = _color_data[i][j];
+	}
+	color_array():color_array(0.0, 0.0) {}
 	~color_array()
 	{
 		deallocate();
@@ -55,6 +62,7 @@ public:
 	}
 
 
+
 private:
 	int width, height;
 	color_data** array;
@@ -62,7 +70,7 @@ private:
 	void allocate()
 	{
 		color_data* temp = (color_data*)malloc(width * height * sizeof(color_data));
-		this->array = (color_data**)malloc(width * sizeof(color_data*));
+		this->array = (color_data**)malloc(width * sizeof(color_data*)); // Column major allocation since we use color_data[x_index][y_index]
 		for (int i = 0; i < width; i++)
 			this->array[i] = &temp[i * height];
 	}
@@ -76,7 +84,14 @@ private:
 
 inline std::ostream& operator<<(std::ostream& out, const color_data& _c_data)
 {
-	return out << _c_data.r << " " << _c_data.g << " " << _c_data.b;
+	static const interval intensity(0.000, 0.999);
+	double r = _c_data.r;
+	double g = _c_data.g;
+	double b = _c_data.b;
+	int rbyte = int(256 * intensity.clamp(r));
+	int gbyte = int(256 * intensity.clamp(g));
+	int bbyte = int(256 * intensity.clamp(b));
+	return out << rbyte << " " << gbyte << " " << bbyte << std::endl;
 }
 
 

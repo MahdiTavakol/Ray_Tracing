@@ -22,11 +22,11 @@ public:
 					ray r = get_ray(i, j);
 					pixel_color += ray_color(r, max_depth, world);
 				}
-				pixel_color = pixel_samples_scale * pixel_color;
 				color_data** c_data = c_a.return_array();
+				pixel_color = pixel_samples_scale * pixel_color;
 				c_data[i - width_min][j - height_min].r = pixel_color.x();
 				c_data[i - width_min][j - height_min].g = pixel_color.y();
-				c_data[i - width_min][j - height_min].b = pixel_color.z();
+				c_data[i - width_min][j - height_min].b = pixel_color.z();	
 			}
 		}
 	}
