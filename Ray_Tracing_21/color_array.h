@@ -25,7 +25,7 @@ public:
 				this->array[i][j] = _color_data[i * height + j]; //1D to 2D array conversion
 			}
 	}
-	color_array::color_array(const color_array& c_a)
+	color_array(const color_array& c_a)
 	{
     		this->width = c_a.width;
     		this->height = c_a.height;
