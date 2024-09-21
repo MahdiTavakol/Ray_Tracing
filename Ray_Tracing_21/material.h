@@ -4,9 +4,6 @@
 
 #include "rtweekend.h"
 
-#include "ray.h"
-#include "color.h"
-
 class hit_record;
 
 class material
