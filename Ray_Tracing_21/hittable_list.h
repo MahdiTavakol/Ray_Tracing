@@ -1,7 +1,10 @@
 #ifndef HITTABLE_LIST_H
 #define HITTABLE_LIST_H
 
+#include "rtweekend.h"
+
 #include "hittable.h"
+#include "interval.h"
 
 
 #include <vector>
@@ -30,7 +33,7 @@ public:
 
 		for (const auto& object : objects)
 		{
-			if (object->hit(r, interval(ray_t.min,closest_so_far), temp_rec))
+			if (object->hit(r, interval(ray_t.min, closest_so_far), temp_rec))
 			{
 				hit_anything = true;
 				closest_so_far = temp_rec.t;
