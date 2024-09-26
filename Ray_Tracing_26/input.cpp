@@ -7,7 +7,7 @@
 #include "input.h"
 
 
-input::input(int argc, char** argv) :image_width(200), samples_per_pixel(100), max_depth(50),
+input::input(int argc, char** argv) :image_width(1080), samples_per_pixel(100), max_depth(50),
 vfov(20), width_ratio(16.0), height_ratio(9.0), fps(60), num_seconds(10), input_logger(false)
 {
 	int iarg = 1;
@@ -100,6 +100,7 @@ vfov(20), width_ratio(16.0), height_ratio(9.0), fps(60), num_seconds(10), input_
 
 
 	this->defocus_angle = 0.6;
+	this->defocus_angle = 0;
 	this->focus_dist = 10.0;
 
 	int rank;

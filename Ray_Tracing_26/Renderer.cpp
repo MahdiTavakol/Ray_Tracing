@@ -2,7 +2,8 @@
 
 
 
-renderer::renderer(int argc, char** argv, int _mode, std::string _filename) : mode(_mode)
+renderer::renderer(int argc, char** argv, int _mode, std::string _filename) 
+	: mode(_mode), c_array(nullptr), c_array_all(nullptr)
 {
 	in = new input(argc, argv);
 	cam = new camera_parallel(in);
@@ -10,8 +11,6 @@ renderer::renderer(int argc, char** argv, int _mode, std::string _filename) : mo
 	para = new parallel(cam, world);
 	file = new std::ofstream(_filename);
 	writer = new write(file);
-	c_array = nullptr;
-	c_array_all = nullptr;
 }
 
 renderer::~renderer()
@@ -22,6 +21,8 @@ renderer::~renderer()
 	delete para;
 	delete file;
 	delete writer;
+	c_array = nullptr;
+	c_array_all = nullptr;
 }
 
 void renderer::setup()
@@ -32,6 +33,8 @@ void renderer::setup()
 		setup_random_spheres();
 	if (mode == CHECKER_BOARDS)
 		setup_checker_boards();
+	if (mode == EARTH_SPHERE)
+		setup_earth_sphere();
 
 	para->setup(cam, world);
 }
@@ -129,5 +132,16 @@ void renderer::setup_checker_boards()
 	world->add(make_shared<sphere>(point3(0, -10, 0), 10, make_shared<lambertian>(checker)));
 	world->add(make_shared<sphere>(point3(0, 10, 0), 10, make_shared<lambertian>(checker)));
 	
+	*world = hittable_list(make_shared<bvh_node>(*world));
+}
+
+void renderer::setup_earth_sphere()
+{
+	auto earth_texture = make_shared<image_texture>("3840px-Blue_Marble_2002.png");
+	auto earth_surface = make_shared<lambertian>(earth_texture);
+	auto globe = make_shared<sphere>(point3(0, 0, 0), 2, earth_surface);
+
+	world->add(globe);
+
 	*world = hittable_list(make_shared<bvh_node>(*world));
 }

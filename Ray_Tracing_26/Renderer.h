@@ -16,13 +16,14 @@
 #include "material.h"
 #include "parallel.h"
 #include "ray.h"
+#include "rtw_stb_image.h"
 #include "sphere.h"
 #include "texture.h"
 #include "vec3.h"
 #include "write.h"
 
 
-enum { RANDOM_SPHERES, CHECKER_BOARDS };
+enum { RANDOM_SPHERES, CHECKER_BOARDS, EARTH_SPHERE };
 
 class renderer
 {
@@ -50,6 +51,7 @@ private:
 
 	void setup_random_spheres();
 	void setup_checker_boards();
+	void setup_earth_sphere();
 
 };
 
