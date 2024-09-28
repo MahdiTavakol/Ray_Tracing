@@ -2,8 +2,8 @@ The input:
 C:\6-Courses\7-RayTracing\Static\RayTracing30\Ray_Tracing_30\x64\Debug\Ray_Tracing_30.exe 
 The parsed values: 
 C:\6-Courses\7-RayTracing\Static\RayTracing30\Ray_Tracing_30\x64\Debug\Ray_Tracing_30.exe
-image_width = 400
-samples_per_pixel = 100
+image_width = 1080
+samples_per_pixel = 600
 max_depth = 50
 vfov = 40
 aspect_ratio = 1/1

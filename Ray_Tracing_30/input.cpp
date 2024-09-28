@@ -7,7 +7,7 @@
 #include "input.h"
 
 
-input::input(int argc, char** argv, int mode):image_width(400), samples_per_pixel(100), max_depth(50),
+input::input(int argc, char** argv, int mode):image_width(1080), samples_per_pixel(600), max_depth(50),
 vfov(20), width_ratio(16.0), height_ratio(9.0), fps(60), num_seconds(10), input_logger(false)
 {
 	int iarg = 1;
